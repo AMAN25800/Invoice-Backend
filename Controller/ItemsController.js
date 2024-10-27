@@ -23,7 +23,9 @@ const addItems = async (req, res) => {
             await newProductList.save();
           }
           if(user){
-            const newProductList=new user({
+          
+            await user.updateOne({
+              email,
               items,
             })
           }

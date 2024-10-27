@@ -23,11 +23,12 @@ const addItems = async (req, res) => {
       await newProductList.save();
       return res.status(201).json({ message: "New user created, and items added successfully!" });
     } else {
-      // Update existing user's items using $push to add to the array
-      await user.updateOne({
-        $push: { items: { $each: items } },
-      });
-      return res.status(200).json({ message: "Items updated successfully!" });
+      // Update existing user's items using $push with $each to add new items
+      await ProductList.updateOne(
+        { email },
+        { $push: { items: { $each: items } } }
+      );
+      return res.status(200).json({ message: "Items added successfully!" });
     }
   } catch (error) {
     console.error("Error saving items:", error);
@@ -47,9 +48,9 @@ const listItems = async (req, res) => {
       });
     }
 
-    const items = await ProductList.findOne({ email });
+    const user = await ProductList.findOne({ email });
 
-    if (!items) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "No items found for this email.",
@@ -58,7 +59,7 @@ const listItems = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: items,
+      data: user,
     });
   } catch (error) {
     console.error("Error fetching items:", error);

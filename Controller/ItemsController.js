@@ -1,7 +1,7 @@
 import ProductList from "../Model/ItemSchema.js";
 
-// Controller to Add Items
-const addItems = async (req, res) => {
+// Controller to Add or Update Items
+const addOrUpdateItems = async (req, res) => {
   console.log("Request Body:", req.body); // Log the incoming request body
   const { email, items } = req.body;
 
@@ -11,11 +11,11 @@ const addItems = async (req, res) => {
       return res.status(400).json({ message: "Items array is required." });
     }
 
-    // Find the user by email
-    const user = await ProductList.findOne({ email });
+    // Check if the user already exists
+    let user = await ProductList.findOne({ email });
 
     if (!user) {
-      // Create a new product list if user doesn't exist
+      // Create a new product list if the user doesn't exist
       const newProductList = new ProductList({
         email,
         items,
@@ -23,10 +23,9 @@ const addItems = async (req, res) => {
       await newProductList.save();
       return res.status(201).json({ message: "New user created, and items added successfully!" });
     } else {
-      // Update existing user's items using $push to add to the array
-      await user.updateOne({
-        $push: { items: { $each: items } },
-      });
+      // Append new items to the existing user's items
+      user.items.push(...items); // Spread the new items into the existing array
+      await user.save();
       return res.status(200).json({ message: "Items updated successfully!" });
     }
   } catch (error) {
@@ -70,4 +69,4 @@ const listItems = async (req, res) => {
   }
 };
 
-export { addItems, listItems };
+export { addOrUpdateItems, listItems };

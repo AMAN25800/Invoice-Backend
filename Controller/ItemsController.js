@@ -13,15 +13,23 @@ const addItems = async (req, res) => {
             if (!Array.isArray(items) || items.length === 0) {
                 return res.status(400).json({ message: "Items array is required." });
             }
-    
+    const user=ProductList.findOne({email});
+    if(!user){
             // Create a new product list
             const newProductList = new ProductList({
                 items,
                 email
             });
+            await newProductList.save();
+          }
+          if(user){
+            const newProductList=new user({
+              items,
+            })
+          }
     
             // Save the product list to the database
-            await newProductList.save();
+            
     
             return res.status(201).json({ message: "Items added successfully!" });
         } catch (error) {

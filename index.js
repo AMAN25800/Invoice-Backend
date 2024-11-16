@@ -1,7 +1,7 @@
 import express from "express"
 import Transactionrouter from "./route/TransactionRoute.js";
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 4000;
 import cors from 'cors';
 import {Connectdb} from "./database/db.js"
 import userRouter from "./route/userRoute.js";
